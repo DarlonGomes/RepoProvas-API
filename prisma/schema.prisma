@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+
+  @@map("users")
+}
+
+model Term {
+  id         Int          @id @default(autoincrement())
+  number     Int          @unique
+  Discipline Discipline[]
+  created_at DateTime     @default(now())
+
+  @@map("terms")
+}
+
+model Discipline {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique
+  Term              Term                @relation(fields: [termId], references: [id])
+  termId            Int
+  TeacherDiscipline TeacherDiscipline[]
+  created_at        DateTime            @default(now())
+
+  @@map("disciplines")
+}
+
+model Teacher {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique
+  TeacherDiscipline TeacherDiscipline[]
+  created_at        DateTime            @default(now())
+
+  @@map("teachers")
+}
+
+model TeacherDiscipline {
+  id           Int        @id @default(autoincrement())
+  Teacher      Teacher    @relation(fields: [teacherId], references: [id])
+  Discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  teacherId    Int
+  disciplineId Int
+  Test         Test[]
+  created_at   DateTime   @default(now())
+
+  @@map("teachersDisciplines")
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  Test       Test[]
+  created_at DateTime @default(now())
+
+  @@map("categories")
+}
+
+model Test {
+  id                  Int               @id @default(autoincrement())
+  name                String
+  pdfUrl              String
+  Category            Category          @relation(fields: [categoryId], references: [id])
+  TeacherDiscipline   TeacherDiscipline @relation(fields: [teacherDisciplineId], references: [id])
+  categoryId          Int
+  teacherDisciplineId Int
+  created_at          DateTime          @default(now())
+
+  @@map("test")
+}
