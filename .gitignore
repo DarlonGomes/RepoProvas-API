@@ -3,4 +3,7 @@ node_modules
 
 # files
 .env
+.env.test
+.env.local
 package-lock.json
+coverage
