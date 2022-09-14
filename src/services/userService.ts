@@ -39,7 +39,7 @@ export async function comparePassword (password: string, hashPassword:string){
 };
 
 export async function generateToken(id: number) {
-    const token : string = jwt.sign({userId: id}, process.env.ACCESS_TOKEN_SECRET!, {expiresIn: process.env.TOKEN_EXPIRES_IN})
+    const token : string = jwt.sign({userId: id}, process.env.TOKEN_SECRET!, {expiresIn: process.env.TOKEN_EXPIRES_IN})
     const config = {
         headers: {
             Authorization:`Bearer ${token}`

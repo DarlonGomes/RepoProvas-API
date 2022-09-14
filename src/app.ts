@@ -5,13 +5,12 @@ import cors from "cors";
 import {router} from "./routers";
 import {errorHandler} from "./middlewares"
 
-
 export const app = express();
 
 app.use(express.json());
 app.use(cors());
 app.use(router);
 app.use(errorHandler);
-
+app.listen(process.env.PORT || 5000)
 console.log(`Listening  at ${process.env.PORT}`);
 
