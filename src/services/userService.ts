@@ -1,6 +1,6 @@
 import { ISignUp } from "../interfaces";
 import { ErrorInfo } from "../middlewares/errorMiddleware"
-import * as userRepository from "../repositories"
+import { userRepository } from "../repositories"
 import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import { encryptUtils } from "../utils";
