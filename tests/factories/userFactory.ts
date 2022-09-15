@@ -1,5 +1,3 @@
-import client from "../../src/database/prisma"
-import bcrypt from "bcrypt"
 
   export function __createUserData(){
     return {
