@@ -5,7 +5,8 @@ import { ITestRequest } from "../interfaces";
 export async function insertion (req: Request, res: Response){
     const {userId} = res.locals.userId;
     const testRequest : ITestRequest = req.body;
-
+    await testService.checkCategoryId(testRequest.categoryId);
+    await testService.checkTeacherDisciplineId(testRequest.teacherDisciplineId)
     const testWithUserId = await testService.insertUserId(testRequest, userId);
     const createdTest = await testService.testCreation(testWithUserId);
 

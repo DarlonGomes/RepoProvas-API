@@ -1,20 +1,19 @@
 import { app }  from "../src/app"
 import supertest from 'supertest'
 import client from "../src/database/prisma"
-import { userFactory } from "../tests/factories"
+import { userFactory } from "./factories"
 
 beforeAll(async () => {
-    await client.$executeRaw`TRUNCATE TABLE users;`;
+    await client.$executeRaw`TRUNCATE TABLE users CASCADE`;
   });
-  
 describe("POST /user", ()=>{
-    it("'/sign-up': given a invalid body should return 201", async () =>{
+    it("'/sign-up': given a valid body should return 201", async () =>{
         const body =  userFactory.__createUserData();
         const result = await supertest(app).post("/user/sign-up").send(body);
         const status = result.status;
         expect(status).toEqual(201);
     });
-    it("'/sign-up': given a valid body that already exists return 409", async () =>{
+    it("'/sign-up': given a invalid body that already exists return 409", async () =>{
         const body =  userFactory.__createExistentUserData()
         const result = await supertest(app).post("/user/sign-up").send(body);
         const status = result.status;
@@ -58,3 +57,4 @@ describe("POST /user", ()=>{
 afterAll(async () => {
     await client.$disconnect();
 });
+
