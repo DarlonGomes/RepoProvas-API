@@ -22,10 +22,11 @@ model User {
 }
 
 model Term {
-  id         Int          @id @default(autoincrement())
-  number     Int          @unique
-  Discipline Discipline[]
-  created_at DateTime     @default(now())
+  id          Int          @id @default(autoincrement())
+  number      Int
+  disciplines Discipline[]
+
+  created_at  DateTime     @default(now())
 
   @@map("terms")
 }
@@ -63,10 +64,10 @@ model TeacherDiscipline {
 }
 
 model Category {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
   Test       Test[]
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
 
   @@map("categories")
 }

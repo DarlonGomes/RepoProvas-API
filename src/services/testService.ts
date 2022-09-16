@@ -1,6 +1,5 @@
 import { ITestInsert, ITestRequest } from "../interfaces";
-import { ErrorInfo } from "../middlewares";
-import { testRepository, validationRepository } from "../repositories";
+import { testRepository } from "../repositories";
 
 export async function insertUserId (request: ITestRequest, userId: number){
     const newRequest : ITestInsert = {...request, userId: userId}
@@ -11,13 +10,13 @@ export async function testCreation(test: ITestInsert){
     return createdTest
 }
 
-export async function checkCategoryId (categoryId: number){
-    const validation = await validationRepository.ensureCategoryExists(categoryId);
-    if(!validation) throw new ErrorInfo("error_not_found", "This category doesn't exists");
+export async function listTestByDiscipline (){
+    const response = await testRepository.checkTestByDiscipline()
+    return response
+}
 
-};
 
-export async function checkTeacherDisciplineId (teacherDisciplineId: number){
-    const validation = await validationRepository.ensureTeacherDisciplineExists(teacherDisciplineId);
-    if(!validation) throw new ErrorInfo("error_not_found", "This relation doesn't exists");
+export async function listTestByTeacher (){
+    const response = await testRepository.checkTestByTeacher();
+    return response
 }

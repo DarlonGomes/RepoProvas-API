@@ -1,3 +1,4 @@
+import { byDiscipline } from "../controllers/testController";
 import client from "../database/prisma";
 import { ITestInsert } from "../interfaces";
 
@@ -8,14 +9,119 @@ export async function create (test: ITestInsert){
     return createdTest
 }
 
-export async function checkTestByDiscipline (disciplineId: number){
+export async function checkTestByDiscipline (){
 
+    const list = await client.term.findMany({
+        select:{
+            number: true,
+            disciplines:{
+                select:{
+                    name: true,
+                    TeacherDiscipline:{
+                        select:{
+                            Test:{
+                                select:{
+                                    id: true,
+                                    name: true,
+                                    pdfUrl: true,
+                                    created_at: true,
+                                    TeacherDiscipline:{
+                                        select:{Teacher:{select:{name:true}}},
+                                    },
+                                    Category:{
+                                        select: {name: true}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+    const mappedList = list.map((period)=>{
+        return{
+            number: period.number,
+            disciplines: period.disciplines.map(
+                (discipline)=>{
+                    return{
+                        name: discipline.name,
+                        tests: discipline.TeacherDiscipline[0].Test.map((test)=>{
+                            return {
+                                id: test.id,
+                                name: test.name,
+                                pdfUrl: test.pdfUrl,
+                                created_at: test.created_at,
+                                teacherName: test.TeacherDiscipline.Teacher.name,
+                                category: test.Category.name
+                            }
+                        })
+                    }
+                }
+            )
+        }
+    })
+    return mappedList
 }
 
 export async function checkTestByUser (userId: number){
 
 }
 
-export async function checkTestByTeacher(teacherId: number){
+export async function checkTestByTeacher(){
 
+const list = await client.teacher.findMany({
+    select:{
+        name: true,
+        TeacherDiscipline:{
+            select:{
+                Discipline:{
+                    select:{
+                        name: true,
+                        TeacherDiscipline:{
+                            select:{
+                                Test:{
+                                    select:{
+                                        id: true,
+                                        name: true,
+                                        pdfUrl: true,
+                                        created_at: true,
+                                        Category:{
+                                            select:{
+                                                name: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+
+const mappedList = list.map((teacher)=>{
+    return{name: teacher.name,
+        disciplines: teacher.TeacherDiscipline.map(
+        (discipline) => {
+             return { name: discipline.Discipline.name,
+                 tests: discipline.Discipline.TeacherDiscipline[0].Test.map(
+                (test) =>{
+                    return {
+                        id: test.id,
+                        name: test.name,
+                        pdfUrl: test.pdfUrl,
+                        created_at: test.created_at,
+                        category: test.Category.name
+                    }
+                }
+             )}
+        })
+    }
+});
+
+return mappedList
 }
+
