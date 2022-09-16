@@ -13,7 +13,7 @@ export async function checkTestByDiscipline (){
         select:{
             id: true,
             number: true,
-            disciplines:{
+            Discipline:{
                 select:{
                     id:true,
                     name: true
@@ -50,7 +50,7 @@ export async function checkTestByDiscipline (){
         });
         const withCategory = {
             number: period.number,  
-            disciplines: period.disciplines.map(
+            disciplines: period.Discipline.map(
                 (discipline)=>{
                     return{
                         id: discipline.id,

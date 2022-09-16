@@ -24,7 +24,7 @@ model User {
 model Term {
   id          Int          @id @default(autoincrement())
   number      Int
-  disciplines Discipline[]
+  Discipline Discipline[]
 
   created_at  DateTime     @default(now())
 
