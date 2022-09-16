@@ -45,6 +45,7 @@ model Teacher {
   id                Int                 @id @default(autoincrement())
   name              String              @unique
   TeacherDiscipline TeacherDiscipline[]
+  Category          Category[]
   created_at        DateTime            @default(now())
 
   @@map("teachers")
@@ -63,10 +64,11 @@ model TeacherDiscipline {
 }
 
 model Category {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
   Test       Test[]
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
+  Teacher    Teacher[]
 
   @@map("categories")
 }

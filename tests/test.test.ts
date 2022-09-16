@@ -8,8 +8,9 @@ beforeAll(async()=>{
     await client.$executeRaw`TRUNCATE TABLE test;`;
 });
 
+let header : any = null; 
+
 describe("POST /test", () =>{
-    let header : any = null; 
     it("'/submit': given a valid body should return 201", async()=>{
         const body =  userFactory.__createUserData();
         await supertest(app).post("/user/sign-up").send(body);
@@ -45,8 +46,28 @@ describe("POST /test", () =>{
         const status = result.status;
         expect(status).toEqual(404);
     });
-    
 });
+
+describe("GET /test", ()=>{
+    it("'/discipline': given a valid token should return 200 and a valid response", async()=>{
+        const result = await supertest(app).get("/test/discipline").set("Authorization", header);
+        expect(result.status).toEqual(200);
+        expect(result.body).toBeInstanceOf(Array);
+    });
+    it("'/discipline: given a invalid token should return 401", async()=>{
+        const result = await supertest(app).get("/test/discipline").set("Authorization", "not-a-token");
+        expect(result.status).toEqual(401);
+    });
+    it("'/teacher': given a valid token should return 200 and a valid response", async()=>{
+        const result = await supertest(app).get("/test/teacher").set("Authorization", header);
+        expect(result.status).toEqual(200);
+        expect(result.body).toBeInstanceOf(Array);
+    });
+    it("'/teacher: given a invalid token should return 401", async()=>{
+        const result = await supertest(app).get("/test/teacher").set("Authorization", "not-a-token");
+        expect(result.status).toEqual(401);
+    });
+})
 
 afterAll(async () => {
     await client.$disconnect();

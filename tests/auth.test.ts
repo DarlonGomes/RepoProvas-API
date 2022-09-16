@@ -27,7 +27,6 @@ describe("POST /user", ()=>{
         expect(status).toEqual(422);
 
     });
-
     it("'/sign-in': given a invalid body should return 422", async () =>{
         const body =  userFactory.__submitInvalidDataJOI()
         const result = await supertest(app).post("/user/sign-in").send(body);
