@@ -12,28 +12,83 @@ export async function create (test: ITestInsert){
 export async function checkTestByDiscipline (){
 
     const list = await client.term.findMany({
-        include:{
-            Discipline: {
-                include:{
+        select:{
+            number: true,
+            disciplines:{
+                select:{
+                    name: true,
                     TeacherDiscipline:{
-                        include:{
-                            Test: {
-                                include:{
-                                    Category: {
-                                        include: {
-                                            Test : {
-                                                include: {
-                                                    TeacherDiscipline :{
-                                                        include:{
-                                                            Teacher : {
-                                                                select:{
-                                                                    name: true
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                        select:{
+                            Test:{
+                                select:{
+                                    id: true,
+                                    name: true,
+                                    pdfUrl: true,
+                                    created_at: true,
+                                    TeacherDiscipline:{
+                                        select:{Teacher:{select:{name:true}}},
+                                    },
+                                    Category:{
+                                        select: {name: true}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+    const mappedList = list.map((period)=>{
+        return{
+            number: period.number,
+            disciplines: period.disciplines.map(
+                (discipline)=>{
+                    return{
+                        name: discipline.name,
+                        tests: discipline.TeacherDiscipline[0].Test.map((test)=>{
+                            return {
+                                id: test.id,
+                                name: test.name,
+                                pdfUrl: test.pdfUrl,
+                                created_at: test.created_at,
+                                teacherName: test.TeacherDiscipline.Teacher.name,
+                                category: test.Category.name
+                            }
+                        })
+                    }
+                }
+            )
+        }
+    })
+    return mappedList
+}
+
+export async function checkTestByUser (userId: number){
+
+}
+
+export async function checkTestByTeacher(){
+
+const list = await client.teacher.findMany({
+    select:{
+        name: true,
+        TeacherDiscipline:{
+            select:{
+                Discipline:{
+                    select:{
+                        name: true,
+                        TeacherDiscipline:{
+                            select:{
+                                Test:{
+                                    select:{
+                                        id: true,
+                                        name: true,
+                                        pdfUrl: true,
+                                        created_at: true,
+                                        Category:{
+                                            select:{
+                                                name: true
                                             }
                                         }
                                     }
@@ -44,147 +99,29 @@ export async function checkTestByDiscipline (){
                 }
             }
         }
-    );
-   
-    const betterList = list.map(
-        (period)=>{
-            return { ...period, Discipline: period.Discipline.map(
-                (discipline) => {
-                    return { ...discipline, TeacherDiscipline: discipline.TeacherDiscipline.map(
-                        (relation) => {
-                            return { exames : relation.Test.map(
-                                (test) => {
-                                    return  test.Category
-                                }
-                            )}
-                        }
-                    )}
-                }
-            )}
-        })
-    return betterList
-}
-
-export async function checkTestByUser (userId: number){
-
-}
-
-export async function checkTestByTeacher(){
-
-const list = await client.teacher.findMany({
-    include:{
-        TeacherDiscipline :{
-            include:{
-                Test :{
-                    include :{
-                        Category : {
-                            include: {
-                                Test : true
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 });
 
-const betterList = list.map(
-    (teacher)=>{
-        return{ id: teacher.id, name:teacher.name, relation: teacher.TeacherDiscipline.map(
-            (relation) =>{
-                return {id: relation.id, summary: relation.Test.map(
-                    (categories)=>{
-                        return { category: categories.Category}
+const mappedList = list.map((teacher)=>{
+    return{name: teacher.name,
+        disciplines: teacher.TeacherDiscipline.map(
+        (discipline) => {
+             return { name: discipline.Discipline.name,
+                 tests: discipline.Discipline.TeacherDiscipline[0].Test.map(
+                (test) =>{
+                    return {
+                        id: test.id,
+                        name: test.name,
+                        pdfUrl: test.pdfUrl,
+                        created_at: test.created_at,
+                        category: test.Category.name
                     }
-                )}
-            }
-        )}
+                }
+             )}
+        })
     }
-)
-return betterList
-    
-    // const betterMap = list.map(
-    //     (teacher)=>{
-    //         return{id: teacher.id, name: teacher.name, summary: teacher.TeacherDiscipline.map(
-    //             (container) =>{
-    //                 if(container.Test.length === 0) return 
-    //                 else{
-    //                     return {container: container.Test}
-    //                 }
-    //             }
-    //         )}
-    //     }
-    // )
-    // const betterList = list.map(
-    //     (teacher)=>{
-    //         return{ id: teacher.id, name:teacher.name, relation: teacher.TeacherDiscipline.map(
-    //             (relation) =>{
-    //                 return {id: relation.id, summary: relation.Test.map(
-    //                     (categories)=>{
-    //                         return { category: categories.Category}
-    //                     }
-    //                 )}
-    //             }
-    //         )}
-    //     }
-    // )
+});
 
+return mappedList
 }
-// //TEST 
-// const list = await client.teacher.findMany({
-//     include:{
-//         TeacherDiscipline :{
-//             select:{
-//                 Discipline:{
-//                     select: {
-//                         name: true
-//                     }
-//                 },
-//                 Test:{
-//                     include:{
-//                         Category:{
-//                             include:{
-//                                 Test: true
-//                             }
-//                         }
-//                     }
-//                 }
-//             },
-//     }
-// }});
 
-
-// //actual
-// const list = await client.teacher.findMany({
-//     include:{
-//         TeacherDiscipline :{
-//             include:{
-//                 Test :{
-//                     include :{
-//                         Category : {
-//                             include: {
-//                                 Test : true
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// });
-
-// const betterList = list.map(
-//     (teacher)=>{
-//         return{ id: teacher.id, name:teacher.name, relation: teacher.TeacherDiscipline.map(
-//             (relation) =>{
-//                 return {id: relation.id, summary: relation.Test.map(
-//                     (categories)=>{
-//                         return { category: categories.Category}
-//                     }
-//                 )}
-//             }
-//         )}
-//     }
-// )
-// return betterList
