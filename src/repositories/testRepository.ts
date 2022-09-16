@@ -1,4 +1,3 @@
-import { byDiscipline } from "../controllers/testController";
 import client from "../database/prisma";
 import { ITestInsert } from "../interfaces";
 
@@ -10,62 +9,80 @@ export async function create (test: ITestInsert){
 }
 
 export async function checkTestByDiscipline (){
-
     const list = await client.term.findMany({
         select:{
+            id: true,
             number: true,
             disciplines:{
                 select:{
-                    name: true,
-                    TeacherDiscipline:{
-                        select:{
-                            Test:{
-                                select:{
-                                    id: true,
-                                    name: true,
-                                    pdfUrl: true,
-                                    created_at: true,
-                                    TeacherDiscipline:{
-                                        select:{Teacher:{select:{name:true}}},
-                                    },
-                                    Category:{
-                                        select: {name: true}
+                    id:true,
+                    name: true
+                }
+            }
+        }
+    });
+   
+    const addCategories = await Promise.all(list.map(async (period)=>{
+        const category = await client.category.findMany({
+            select:{
+                id:true,
+                name: true,
+                Test: {
+                    select:{
+                        id:true,
+                        name: true,
+                        pdfUrl: true,
+                        created_at:true,
+                        TeacherDiscipline:{
+                            select:{
+                                disciplineId: true,
+                                Teacher:{
+                                    select:{
+                                        name: true
                                     }
                                 }
                             }
                         }
                     }
                 }
+                
             }
-        }
-    });
-    const mappedList = list.map((period)=>{
-        return{
-            number: period.number,
+        });
+        const withCategory = {
+            number: period.number,  
             disciplines: period.disciplines.map(
                 (discipline)=>{
                     return{
+                        id: discipline.id,
                         name: discipline.name,
-                        tests: discipline.TeacherDiscipline[0].Test.map((test)=>{
-                            return {
-                                id: test.id,
-                                name: test.name,
-                                pdfUrl: test.pdfUrl,
-                                created_at: test.created_at,
-                                teacherName: test.TeacherDiscipline.Teacher.name,
-                                category: test.Category.name
+                        categories: category.map((category)=>{
+                            return{
+                                id: category.id,
+                                name: category.name,
+                                tests: category.Test.map((test)=>{
+                                    if(test.TeacherDiscipline.disciplineId === discipline.id){
+                                        return{
+                                            id: test.id,
+                                            name: test.name,
+                                            pdfUrl: test.pdfUrl,
+                                            date: test.created_at,
+                                            disciplineId: test.TeacherDiscipline.disciplineId,
+                                            teacherName: test.TeacherDiscipline.Teacher.name
+                                        }
+                                    }
+                                }).filter((testElement)=> testElement )
                             }
-                        })
+                        }).filter((categoryElement)=> categoryElement.tests.length > 0)
                     }
                 }
             )
-        }
-    })
-    return mappedList
-}
+        };
 
-export async function checkTestByUser (userId: number){
+        return withCategory
+    }));
 
+
+    return addCategories
 }
 
 export async function checkTestByTeacher(){
@@ -122,60 +139,8 @@ const teachersDetails = await Promise.all(teacherList.map(async (teacher)=>{
                 }
             )
         }
-    }) }
+    }).filter((detailElement)=> detailElement.tests.length > 0) }
 }))
 
 return teachersDetails
 }
-
-// const list = await client.teacher.findMany({
-//     select:{
-//         name: true,
-//         TeacherDiscipline:{
-//             select:{
-//                 Discipline:{
-//                     select:{
-//                         name: true,
-//                         TeacherDiscipline:{
-//                             select:{
-//                                 Test:{
-//                                     select:{
-//                                         id: true,
-//                                         name: true,
-//                                         pdfUrl: true,
-//                                         created_at: true,
-//                                         Category:{
-//                                             select:{
-//                                                 name: true
-//                                             }
-//                                         }
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// });
-
-// const mappedList = list.map((teacher)=>{
-//     return{name: teacher.name,
-//         disciplines: teacher.TeacherDiscipline.map(
-//         (discipline) => {
-//              return { name: discipline.Discipline.name,
-//                  tests: discipline.Discipline.TeacherDiscipline[0].Test.map(
-//                 (test) =>{
-//                     return {
-//                         id: test.id,
-//                         name: test.name,
-//                         pdfUrl: test.pdfUrl,
-//                         created_at: test.created_at,
-//                         category: test.Category.name
-//                     }
-//                 }
-//              )}
-//         })
-//     }
-// });
