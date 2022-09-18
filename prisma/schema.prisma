@@ -80,7 +80,8 @@ model Test {
   TeacherDiscipline   TeacherDiscipline @relation(fields: [teacherDisciplineId], references: [id])
   categoryId          Int
   teacherDisciplineId Int
-  created_at          String
+  date                String
+  created_at          DateTime          @default(now())
   User                User              @relation(fields: [userId], references: [id])
   userId              Int
 

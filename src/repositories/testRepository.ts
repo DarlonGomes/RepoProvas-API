@@ -32,6 +32,7 @@ export async function checkTestByDiscipline (){
                         id:true,
                         name: true,
                         pdfUrl: true,
+                        date: true,
                         created_at:true,
                         TeacherDiscipline:{
                             select:{
@@ -43,6 +44,8 @@ export async function checkTestByDiscipline (){
                                 }
                             }
                         }
+                    },orderBy:{
+                        created_at: "asc"
                     }
                 }
                 
@@ -65,7 +68,7 @@ export async function checkTestByDiscipline (){
                                             id: test.id,
                                             name: test.name,
                                             pdfUrl: test.pdfUrl,
-                                            date: test.created_at,
+                                            date: test.date,
                                             disciplineId: test.TeacherDiscipline.disciplineId,
                                             teacherName: test.TeacherDiscipline.Teacher.name
                                         }
@@ -103,6 +106,7 @@ const teachersDetails = await Promise.all(teacherList.map(async (teacher)=>{
                     pdfUrl: true,
                     teacherDisciplineId: true,
                     created_at: true,
+                    date: true,
                     TeacherDiscipline:{
                         select:{
                             Discipline:{
@@ -134,7 +138,7 @@ const teachersDetails = await Promise.all(teacherList.map(async (teacher)=>{
                         name: test.name,
                         pdfUrl: test.pdfUrl,
                         discipline: test.TeacherDiscipline.Discipline.name,
-                        date: test.created_at
+                        date: test.date
                     }
                 }
             )
