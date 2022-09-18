@@ -1,8 +1,10 @@
 import { ITestInsert, ITestRequest } from "../interfaces";
 import { testRepository } from "../repositories";
+import dayjs from "dayjs";
 
 export async function insertUserId (request: ITestRequest, userId: number){
-    const newRequest = {...request, userId: userId}
+    const date = dayjs().format("YYYY/MM")
+    const newRequest = {...request, userId: userId, created_at: date}
     return newRequest
 }
 export async function testCreation(test: ITestInsert){
