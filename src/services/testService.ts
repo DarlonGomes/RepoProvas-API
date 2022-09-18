@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 export async function insertUserId (request: ITestRequest, userId: number){
     const date = dayjs().format("YYYY/MM")
-    const newRequest = {...request, userId: userId, created_at: date}
+    const newRequest : ITestInsert = {...request, userId: userId, created_at: date}
     return newRequest
 }
 export async function testCreation(test: ITestInsert){
