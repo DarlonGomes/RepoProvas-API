@@ -16,3 +16,4 @@ export async function checkData (email: string){
     });
     return account
 }
+

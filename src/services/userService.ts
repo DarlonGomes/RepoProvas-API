@@ -1,6 +1,6 @@
 import { ISignUp } from "../interfaces";
 import { ErrorInfo } from "../middlewares/errorMiddleware"
-import { userRepository } from "../repositories"
+import { userRepository, formRepository } from "../repositories"
 import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import { encryptUtils } from "../utils";
@@ -47,3 +47,17 @@ export async function generateToken(id: number) {
     }
     return config
 };
+
+export async function formOption(){
+    const categories = await formRepository.categoryInfo();
+    const disciplines = await formRepository.disciplineInfo();
+    const teachers = await formRepository.teacherInfo();
+
+    const data = {
+        categories: categories,
+        disciplines: disciplines,
+        teachers: teachers
+    };
+
+    return data
+}
