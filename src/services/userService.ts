@@ -4,7 +4,8 @@ import { userRepository, formRepository } from "../repositories"
 import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import { encryptUtils } from "../utils";
-
+import { validatorService } from ".";
+import axios from "axios";
 
 export async function checkEmail (email: string, method: "sign-in" | "sign-up" ) : Promise<User | undefined>{
     const account : User | null = await userRepository.checkData(email);
@@ -60,4 +61,30 @@ export async function formOption(){
     };
 
     return data
+}
+
+export async function getGitAuth (code: any){
+    const config = {
+        headers:{
+            Accept: "application/json"
+        }
+    }
+    const response = await axios.post(`https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${code}`, {}, config);
+    const githubUserConfig = {
+        headers:{
+        Authorization: "Bearer "+ response.data.access_token
+        }
+    }
+    return githubUserConfig
+}
+
+export async function getGitDetails (config : any){
+    const githubResponse = await axios.get("https://api.github.com/user?scope=user:email", config)
+    const userEmail = githubResponse.data.email;
+    if(userEmail){
+        const existingUserConfig = await validatorService.checkUserEmail(userEmail)
+        if(existingUserConfig) return existingUserConfig
+    }
+    const newUserConfig = await generateToken(githubResponse.data.id);
+    return newUserConfig
 }

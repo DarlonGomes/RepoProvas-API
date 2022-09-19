@@ -8,3 +8,5 @@ export const userRouter = Router();
 userRouter.post("/sign-up", joiValidation.signUp, userController.signUp);
 userRouter.post("/sign-in", joiValidation.signIn, userController.signIn);
 userRouter.get("/options", tokenValidation, userController.getFormOptions);
+userRouter.get("/sign-in/github", userController.github);
+userRouter.get("/sign-in/github/token", userController.githubToken)

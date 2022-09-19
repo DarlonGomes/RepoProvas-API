@@ -5,7 +5,6 @@ import { ITestRequest } from "../interfaces";
 export async function insertion (req: Request, res: Response){
     const {userId} = res.locals.userId;
     const testRequest : ITestRequest = req.body;
-    await validatorService.checkUserId(userId);
     await validatorService.checkCategoryId(testRequest.categoryId);
     const test = await validatorService.checkTeacherDisciplineId(testRequest);
     const testWithUserId = await testService.insertUserId(test, userId);
@@ -17,7 +16,6 @@ export async function insertion (req: Request, res: Response){
 export async function byDiscipline (req: Request, res: Response){
     const {userId} = res.locals.userId;
     // const {disciplineId} = req.params;
-    await validatorService.checkUserId(userId);
     //  await validatorService.checkDisciplineId();
     const response = await testService.listTestByDiscipline()
      return res.status(200).send(response)
@@ -26,7 +24,6 @@ export async function byDiscipline (req: Request, res: Response){
 export async function byTeacher (req: Request, res: Response){
     const {userId} = res.locals.userId;
     // const {teacherId} = req.params;
-    await validatorService.checkUserId(userId);
     // await validatorService.checkTeacherId(Number(teacherId));
     const response = await testService.listTestByTeacher();
     return res.status(200).send(response);
