@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { ISignIn, ISignUp } from "../interfaces";
-import { userService } from "../services";
+import { userService, validatorService } from "../services";
 
 export async function signUp(req: Request, res: Response){
     const request : ISignUp = req.body;
@@ -18,3 +18,10 @@ export async function signIn(req: Request, res: Response){
     const config = await userService.generateToken(account!.id);
     return res.status(200).send({message: `Success. You will be redirected to the home page`, config: config})
 };
+
+export async function getFormOptions(req: Request, res: Response){
+    const {userId} = res.locals.userId;
+    await validatorService.checkUserId(userId);
+    const response = await userService.formOption();
+    return res.status(200).send(response)
+}
