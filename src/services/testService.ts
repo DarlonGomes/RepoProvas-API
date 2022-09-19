@@ -1,8 +1,8 @@
-import { ITestInsert, ITestRequest } from "../interfaces";
+import { ITestPartial, ITestInsert } from "../interfaces";
 import { testRepository } from "../repositories";
 import dayjs from "dayjs";
 
-export async function insertUserId (request: ITestRequest, userId: number){
+export async function insertUserId (request: ITestPartial, userId: number){
     const date = dayjs().format("YYYY/MM")
     const newRequest : ITestInsert = {...request, userId: userId, date: date}
     return newRequest

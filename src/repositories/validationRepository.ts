@@ -9,10 +9,11 @@ export async function ensureCategoryExists (categoryId: number){
     return response
 };
 
-export async function ensureTeacherDisciplineExists (teacherDisciplineId: number){
-    const response = client.teacherDiscipline.findUnique({
+export async function ensureTeacherDisciplineExists (teacherId: number | undefined, disciplineId: number | undefined){
+    const response = client.teacherDiscipline.findFirst({
         where:{
-            id: teacherDisciplineId
+            teacherId: teacherId,
+            disciplineId: disciplineId
         }
     });
     return response

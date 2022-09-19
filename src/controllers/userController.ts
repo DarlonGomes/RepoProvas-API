@@ -21,7 +21,10 @@ export async function signIn(req: Request, res: Response){
 
 export async function getFormOptions(req: Request, res: Response){
     const {userId} = res.locals.userId;
+    console.log("entrei")
     await validatorService.checkUserId(userId);
     const response = await userService.formOption();
+    console.log("saiu")
+    console.log(response)
     return res.status(200).send(response)
 }

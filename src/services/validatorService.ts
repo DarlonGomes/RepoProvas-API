@@ -1,3 +1,4 @@
+import { ITestRequest } from "../interfaces";
 import { ErrorInfo } from "../middlewares";
 import { validationRepository } from "../repositories";
 
@@ -6,9 +7,13 @@ export async function checkCategoryId (categoryId: number){
     if(!validation) throw new ErrorInfo("error_not_found", "This category doesn't exists");
 };
 
-export async function checkTeacherDisciplineId (teacherDisciplineId: number){
-    const validation = await validationRepository.ensureTeacherDisciplineExists(teacherDisciplineId);
+export async function checkTeacherDisciplineId (test: ITestRequest){
+    
+    const validation = await validationRepository.ensureTeacherDisciplineExists(test.teacherId, test.disciplineId);
     if(!validation) throw new ErrorInfo("error_not_found", "This relation doesn't exists");
+    delete test.teacherId;
+    delete test.disciplineId;
+    return {...test, teacherDisciplineId: validation.id}
 }
 
 export async function checkDisciplineId(disciplineId: number){
