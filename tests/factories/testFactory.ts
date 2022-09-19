@@ -1,28 +1,31 @@
 
 export function invalidRequest(){
-    return {
-        "name": "",
-        "pdfUrl": "https://",
-        "categoryId": -3,
-        "teacherDisciplineId": 3
-      }
+  return {
+    "name": "Cineflex",
+    "pdfUrl": "https://www.greatestpdf.com",
+    "categoryId": -1,
+    "teacherId": -1,
+    "disciplineId": 3
+  }
 }
 
 export function validRequest(){
-    return {
-        "name": "Cineflex",
-        "pdfUrl": "https://www.greatestpdf.com",
-        "categoryId": 1,
-        "teacherDisciplineId": 3
-      }
+  return {
+    name: "I'm not good at this",
+    pdfUrl: "https://www.isuckatplanning.com",
+    categoryId: 1,
+    teacherId: 2,
+    disciplineId: 5,
+  }
 }
 
 export function invalidCategory(){
   return {
     "name": "Cineflex",
     "pdfUrl": "https://www.greatestpdf.com",
-    "categoryId": 30,
-    "teacherDisciplineId": 3
+    "categoryId": 7,
+    "teacherId": 1,
+    "disciplineId": 3
   }
 }
 
@@ -31,6 +34,7 @@ export function invalidRelation(){
     "name": "Cineflex",
     "pdfUrl": "https://www.greatestpdf.com",
     "categoryId": 1,
-    "teacherDisciplineId": 99
+    "teacherId": 4,
+    "disciplineId": 3
   }
 }

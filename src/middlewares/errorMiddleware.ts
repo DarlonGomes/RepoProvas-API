@@ -31,7 +31,6 @@ export class ErrorInfo {
 
 export async function errorHandler(error: ErrorObject, _req: Request, res: Response, _next: NextFunction){
     const {type, message} = error;
-    console.log(error)
     const Errors: ErrorInterface = {
         error_bad_request: {
           status: 400,
