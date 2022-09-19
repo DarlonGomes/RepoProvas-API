@@ -1,7 +1,8 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { ISignIn, ISignUp } from "../interfaces";
-import { userService, validatorService } from "../services";
+import { userService } from "../services";
+
 
 export async function signUp(req: Request, res: Response){
     const request : ISignUp = req.body;
@@ -19,12 +20,23 @@ export async function signIn(req: Request, res: Response){
     return res.status(200).send({message: `Success. You will be redirected to the home page`, config: config})
 };
 
-export async function getFormOptions(req: Request, res: Response){
-    const {userId} = res.locals.userId;
-    console.log("entrei")
-    await validatorService.checkUserId(userId);
+export async function getFormOptions(_req: Request, res: Response){
     const response = await userService.formOption();
-    console.log("saiu")
-    console.log(response)
     return res.status(200).send(response)
+}
+
+export async function github (_req: Request, res: Response){
+    const afterUrl = "http://localhost:5173/loading"
+    const url = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_ID}&&redirect_uri=${afterUrl}`;
+    return res.redirect(url)
+}
+
+export async function githubToken(req: Request, res: Response){
+    const {code} = req.query
+
+    const gitConfig = await userService.getGitAuth(code);
+    const userConfig = await userService.getGitDetails(gitConfig)
+
+    return res.status(200).send(userConfig);
+    
 }

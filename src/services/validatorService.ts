@@ -1,3 +1,4 @@
+import { userService } from ".";
 import { ITestRequest } from "../interfaces";
 import { ErrorInfo } from "../middlewares";
 import { validationRepository } from "../repositories";
@@ -26,7 +27,10 @@ export async function checkTeacherId(teacherId: number){
     if(!validation) throw new ErrorInfo("error_not_found", "This teacher doesn't exists");
 }
 
-export async function checkUserId (userId: number){
-    const validation = await validationRepository.ensureUserExists(userId);
-    if(!validation) throw new ErrorInfo("error_not_found", "This user doesn't exists");
+export async function checkUserEmail(email: string){
+    const validation = await validationRepository.checkIfEmailExists(email);
+    if(validation){
+        const config = await userService.generateToken(validation.id);
+        return config;
+    }
 }

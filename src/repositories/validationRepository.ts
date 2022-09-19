@@ -37,11 +37,11 @@ export async function ensureTeacherExists (teacherId: number){
     return response
 }
 
-export async function ensureUserExists (userId: number){
+export async function checkIfEmailExists(email: string){
     const response = client.user.findUnique({
         where:{
-            id: userId
+            email: email
         }
     });
-    return response
+    return response;
 }
