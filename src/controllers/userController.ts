@@ -26,7 +26,7 @@ export async function getFormOptions(_req: Request, res: Response){
 }
 
 export async function github (_req: Request, res: Response){
-    const afterUrl = "https://localhost:5173/loading"
+    const afterUrl = "https://darlon-repoprovas.vercel.app/loading"
     const url = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_ID}&&redirect_uri=${afterUrl}`;
     return res.redirect(url)
 }
