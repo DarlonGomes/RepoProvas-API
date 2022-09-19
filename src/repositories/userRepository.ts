@@ -17,3 +17,11 @@ export async function checkData (email: string){
     return account
 }
 
+export async function getAllEmails(){
+    const emails = await client.user.findMany({
+        select:{
+            email: true
+        }
+    });
+    return emails
+}

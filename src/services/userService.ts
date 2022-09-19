@@ -2,9 +2,10 @@ import { ISignUp } from "../interfaces";
 import { ErrorInfo } from "../middlewares/errorMiddleware"
 import { userRepository, formRepository } from "../repositories"
 import jwt from "jsonwebtoken";
-import { User } from "@prisma/client";
+import { Test, User } from "@prisma/client";
 import { encryptUtils } from "../utils";
 import { validatorService } from ".";
+import sgMail from "@sendgrid/mail";
 import axios from "axios";
 
 export async function checkEmail (email: string, method: "sign-in" | "sign-up" ) : Promise<User | undefined>{
@@ -87,4 +88,28 @@ export async function getGitDetails (config : any){
     }
     const newUserConfig = await generateToken(githubResponse.data.id);
     return newUserConfig
+}
+
+export async function getUsersEmails(test: Test){
+ const emails = await userRepository.getAllEmails();
+  await sendEmailsToCustomers(emails, test);
+}
+
+export async function sendEmailsToCustomers(emails: any, test: Test){
+    sgMail.setApiKey(process.env.SENDGRID_API!);
+    await Promise.all(emails.map(async(e : any)=>{
+        const msg = {
+            to: e.email,
+            from: "darlonfgomes@gmail.com", // Use the email address or domain you verified above
+            subject: "A new test has been published",
+            test: `The following test has been published: ${test.name} `,
+            html: `<h1>The following test has been published: ${test.name}</h1> `,
+          };
+        try {
+            await sgMail.send(msg);
+        } catch (error) {
+            console.log(error)
+        }
+        return
+    }));
 }

@@ -9,6 +9,7 @@ declare global{
             TOKEN_SECRET: string;
             REFRESH_TOKEN: string;
             TOKEN_EXPIRES_IN: string;
+            SENDGRID_API: string
         }
     }
 }
